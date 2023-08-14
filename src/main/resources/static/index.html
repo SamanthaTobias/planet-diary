@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Diary</title>
+</head>
+<body>
+
+<h2>All Planets</h2>
+<ul id="planetList"></ul>
+
+<h2>Add Planet</h2>
+<form id="addPlanetForm">
+    <label for="planetName">Name:</label>
+    <input type="text" id="planetName" required><br><br>
+
+    <label for="planetType">Type:</label>
+    <input type="text" id="planetType" required><br><br>
+
+    <label for="planetDescription">Description:</label>
+    <input type="text" id="planetDescription" required><br><br>
+
+    <button type="button" onclick="addPlanet()">Add Planet</button>
+</form>
+
+<script>
+    async function fetchPlanets() {
+        const response = await fetch('/api/planets');
+        const planets = await response.json();
+        const planetList = document.getElementById('planetList');
+        planetList.innerHTML = '';
+        planets.forEach(planet => {
+            planetList.innerHTML += `<li>${planet.name} - ${planet.type} - ${planet.description}</li>`;
+        });
+    }
+
+    async function addPlanet() {
+        const planetData = {
+            name: document.getElementById('planetName').value,
+            type: document.getElementById('planetType').value,
+            description: document.getElementById('planetDescription').value
+        };
+        const response = await fetch('/api/planets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(planetData)
+        });
+
+        if (response.status === 201) {
+            alert('Planet added successfully!');
+            fetchPlanets();
+        } else {
+            alert('Failed to add the planet.');
+        }
+    }
+
+    window.onload = fetchPlanets;
+</script>
+
+</body>
+</html>
